@@ -1,0 +1,34 @@
+{
+	"name": "navigate-hacker-news-comments",
+	"description": "Navigate in the DOM of a Hacker News comments page.",
+	"version": "1.0.0",
+	"main": "index.js",
+	"files": [
+		"index.js",
+		"example.js"
+	],
+	"keywords": [
+		"hacker news",
+		"news.ycombinator.com",
+		"hn",
+		"dom"
+	],
+	"author": "Jannis R <mail@jannisr.de>",
+	"homepage": "https://github.com/derhuerst/navigate-hacker-news-comments",
+	"repository": "derhuerst/navigate-hacker-news-comments",
+	"bugs": "https://github.com/derhuerst/navigate-hacker-news-comments/issues",
+	"license": "ISC",
+	"engines": {
+		"node": ">=10"
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+		"eslint": "^6.8.0"
+	},
+	"scripts": {
+		"test": "node test/index.js",
+		"lint": "eslint .",
+		"prepublishOnly": "npm test && npm run lint"
+	}
+}
