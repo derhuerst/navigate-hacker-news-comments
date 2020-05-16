@@ -77,13 +77,15 @@ const _parent = (indents, indent, id) => {
 	}
 }
 
-const findNextComments = function* (document) {
+const findComments = function* (document, start = null) {
 	const rootId = document.querySelector('tr.athing[id]').getAttribute('id')
 	let indents = [
 		[-1, rootId],
 	]
 
-	let c = document.querySelector('.comment-tree tr.comtr')
+	let c = start
+		? start.closest('tr.comtr')
+		: document.querySelector('.comment-tree tr.comtr')
 	while (c) {
 		const id = _id(document, c)
 		const indent = _indent(document, c)
@@ -105,8 +107,36 @@ const findNextComments = function* (document) {
 	}
 }
 
+const findSiblings = function* (document, commentEl) {
+	const comments = findComments(document, commentEl)
+	// parse comment
+	const {done, value: comment} = comments.next()
+	if (done) return null
+
+	while (true) {
+		const {done, value: nextComment} = comments.next()
+		if (done || nextComment.level < comment.level) return null
+		if (nextComment.level === comment.level) yield nextComment
+	}
+}
+
+const findChildren = function* (document, commentEl) {
+	const comments = findComments(document, commentEl)
+	// parse comment
+	const {done, value: comment} = comments.next()
+	if (done) return null
+
+	while (true) {
+		const {done, value: childComment} = comments.next()
+		if (done || childComment.level <= comment.level) return null
+		yield childComment
+	}
+}
+
 // todo
 
 module.exports = {
-	findNextComments,
+	findComments,
+	findSiblings,
+	findChildren,
 }
