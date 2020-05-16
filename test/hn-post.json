@@ -1,0 +1,2034 @@
+[
+	{
+		"id": "23173572",
+		"parentId": "23172483",
+		"author": "aazaa",
+		"age": "12 hours ago",
+		"text": "> ... Deno is (and always will be) a single executable file. Like a web browser, it knows how to fetch external code. In Deno, a single file can define arbitrarily complex behavior without any other tooling.\n\n> ...\n\n> Also like browsers, code is executed in a secure sandbox by default. Scripts cannot access the hard drive, open network connections, or make any other potentially malicious actions without permission. The browser provides APIs for accessing cameras and microphones, but users must first give permission. Deno provides analogous behaviour in the terminal. The above example will fail unless the --allow-net command-line flag is provided.\n\nThe Deno feature that seems to draw the most fire is dependency management. Some skeptics may be latching onto the first point without deeply considering the second.\n\nDeno is just doing the same thing a browser does. Like a browser, there's nothing that JavaScript running on sandboxed Deno can do that a browser can't - in principle. So the security concerns seem a little over the top.\n\nThe one caveat is that once you open the sandbox on Deno, it appears you open it for all modules. But then again, that's what NPM users do all the time - by default.\n\nAs far as criticisms around module orchestration, ES modules take care of that as well. The dependency graph forms from local information without any extra file calling the shots.\n\nThis seems like an experiment worth trying at least.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23173707",
+		"parentId": "23173572",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "See the thing about the sandbox is that it's only going to be effective for very simple programs.\n\nIf you're building a real world application, especially a server application like in the example, you're probably going to want to listen on the network, do some db access and write logs.\n\nFor that you'd have to open up network and file access pretty much right off the bat. That combined with the 'download random code from any url and run it immediately', means it's going to be much less secure than the already not-that-secure NPM ecosystem.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23175634",
+		"parentId": "23173707",
+		"author": "danShumway",
+		"age": "7 hours ago",
+		"text": "> That combined with the 'download random code from any url\n\nWhat protection does NPM actually give you?\n\nSure, they'll remove malware as they find it, but it is so trivially easy to publish packages and updates to NPM, there effectively is no security difference between an NPM module and a random URL. If you wouldn't feel comfortable cloning and executing random Github projects, then you shouldn't feel comfortable installing random NPM modules.\n\n> and run it immediately\n\nNPM packages also do this -- they can have install scripts that run as the current user, and have network access that can allows them to fetch, compile, and execute random binaries off the Internet.\n\nFrom a security point of view, Deno is just making it clear up-front that you are downloading random code snippets, so that programmers are less likely to make the mistake of trusting a largely unmoderated package repository to protect themselves from malware.\n\nI lean towards calling that a reasonably big security win on its own, even without the other sandboxing features.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23176953",
+		"parentId": "23175634",
+		"author": "yoz-y",
+		"age": "4 hours ago",
+		"text": "> What protection does NPM actually give you?\n\nDependency version pinning comes to mind. The main difference between this and a random URL is that at least you know that if the module gets bought by a third party, your services or build system won't auto update to some rando's version of the package. IIRC there have been cases when a version was replaced as well.\n\nI think this could be fixed quite easily if one could add a hash and a size after the url, to force a check.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23177987",
+		"parentId": "23176953",
+		"author": "catears",
+		"age": "2 hours ago",
+		"text": "I was curious about this so I looked into it. Seems like deno allows for lock files (similar to package-lock.json for NPM) https://deno.land/manual/linking_to_external_code/integrity_...",
+		"level": 160
+	},
+	{
+		"id": "23177341",
+		"parentId": "23176953",
+		"author": "another-dave",
+		"age": "3 hours ago",
+		"text": "Yeah, basically sounds like they could implement it à la Content Security Policy in the browser and it would be well understood right off the bat.\n\nOr similar to node_modules, have some way to pull your dependency graph & host locally — At least for enterprise-y adoption I imagine that people will want to have _their_ copy of the code and choose when to update it even if in theory the remote code is locked down.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23178650",
+		"parentId": "23176953",
+		"author": "BiteCode_dev",
+		"age": "48 minutes ago",
+		"text": "A single source of trust for the dependancy transport.",
+		"level": 160
+	},
+	{
+		"id": "23177296",
+		"parentId": "23176953",
+		"author": "virgilp",
+		"age": "4 hours ago",
+		"text": "Arguably you can get (even more reliable) version pinning by copying typescript from that random URL & storing it in your own S3 bucket. Sure, you have _some_ work to do, but it's not that much and you 100% control the code from there on.",
+		"level": 160
+	},
+	{
+		"id": "23177529",
+		"parentId": "23177296",
+		"author": "yoz-y",
+		"age": "3 hours ago",
+		"text": "Well, I suppose they do (or will) provide a self hosted version of the registry. Like npm does.",
+		"level": 200
+	},
+	{
+		"id": "23177979",
+		"parentId": "23177529",
+		"author": "philholden",
+		"age": "2 hours ago",
+		"text": "If you publish your module versions on IPFS that would provide a guarantee to your users the module versions do not change once published. But hashes are not very memorable as module names.",
+		"level": 240
+	},
+	{
+		"id": "23175026",
+		"parentId": "23173707",
+		"author": "jeswin",
+		"age": "9 hours ago",
+		"text": "> That combined with the 'download random code from any url and run it immediately', means it's going to be much less secure than the already not-that-secure NPM ecosystem.\n\nWhat deno does is move package management away from the framework distribution. This is great - one thing I hate about node is that npm is default and you get only as much security as npm gives you. (You can switch the npm repo, but it's still the overwhelming favourite because it's officially bundled.)\n\nDeno can eventually give you:\n\n  import lib from 'verified-secure-packages.com'\n  import lib from 'packages.cloudflare.com'\n\nSo you'll be able to pick a snippet repository based on your risk appetite.",
+		"level": 80
+	},
+	{
+		"id": "23177622",
+		"parentId": "23175026",
+		"author": "HeavyStorm",
+		"age": "3 hours ago",
+		"text": "But if Lib itself imports from \"unsecure-location.com\" deno will access that location and get that file.",
+		"level": 120
+	},
+	{
+		"id": "23178475",
+		"parentId": "23177622",
+		"author": "MrBoomixer",
+		"age": "1 hour ago",
+		"text": "The idea of the above example is to show a controlled distribution can be made that would verify all levels of imports if needed, which is very promising.",
+		"level": 160
+	},
+	{
+		"id": "23174481",
+		"parentId": "23173707",
+		"author": "half-kh-hacker",
+		"age": "11 hours ago",
+		"text": "Both the network and disk access permissions are granular, which means you can allow-write only to your logs folder, and allow net access only to your DB's address.",
+		"level": 80
+	},
+	{
+		"id": "23176801",
+		"parentId": "23174481",
+		"author": "regularfry",
+		"age": "5 hours ago",
+		"text": "So it's reimplemented chmod and iptables?",
+		"level": 120
+	},
+	{
+		"id": "23176904",
+		"parentId": "23176801",
+		"author": "tuukkah",
+		"age": "4 hours ago",
+		"text": "Typically, chmod and iptables are not used to restrict applications. Applications are restricted by virtual machines, containers, sandboxes, AppArmor profiles, SELinux policies…",
+		"level": 160
+	},
+	{
+		"id": "23177537",
+		"parentId": "23176904",
+		"author": "richthegeek",
+		"age": "3 hours ago",
+		"text": "chmod/chown has been the de facto (if not de jure) method securing LAMP stacks for as long as I have been alive. Not that I recommend taking the advice of a LAMP stack too seriously :)",
+		"level": 200
+	},
+	{
+		"id": "23177636",
+		"parentId": "23177537",
+		"author": "tuukkah",
+		"age": "3 hours ago",
+		"text": "If the de facto method refers to \"chmod 777\", I wouldn't call that securing ;-)\n\nBut indeed, if there is a separate user account for the application, then chmod can be used for some control to its access to files and directories.\n              ",
+		"level": 240
+	},
+	{
+		"id": "23178322",
+		"parentId": "23176801",
+		"author": "fanf2",
+		"age": "1 hour ago",
+		"text": "A bit more like OpenBSD pledge() and unveil()",
+		"level": 160
+	},
+	{
+		"id": "23174522",
+		"parentId": "23173707",
+		"author": "teleclimber",
+		"age": "10 hours ago",
+		"text": "> For that you'd have to open up network and file access pretty much right off the bat.\n\nFor the network access I have an issue[0] open that asks to separate permissions to listen on the network from permission to dial. Also, along the way I want to have the ability to let the OS pick the port as an option.\n\nPermissions are meant to work by whitelisting. So you wouldn't open access to the whole system just to talk to your DB, or to operate on some files.\n\n[0] https://github.com/denoland/deno/issues/2705\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173736",
+		"parentId": "23173707",
+		"author": "ricardobeat",
+		"age": "12 hours ago",
+		"text": "Maybe this will develop into a standard of multi-process servers (real micro services you could say), where the permissions are only given to a slice of the application.",
+		"level": 80
+	},
+	{
+		"id": "23174125",
+		"parentId": "23173736",
+		"author": "svieira",
+		"age": "11 hours ago",
+		"text": "That sounds like the Postfix architecture [1]\n\n[1]: https://www.akadia.com/services/postfix_mta.html\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174431",
+		"parentId": "23173736",
+		"author": "chewzerita",
+		"age": "11 hours ago",
+		"text": "Sounds like privilege separation[1].\n\n[1] https://en.wikipedia.org/wiki/Privilege_separation\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174088",
+		"parentId": "23173736",
+		"author": "BubRoss",
+		"age": "11 hours ago",
+		"text": "Reinventing QNX will always be cutting edge.",
+		"level": 120
+	},
+	{
+		"id": "23178768",
+		"parentId": "23174088",
+		"author": "pupdogg",
+		"age": "35 minutes ago",
+		"text": "QNX is hands down amazing! No car manufacturer could ever come close to having their in-house infotainment system being as snappy as QNX...which is why they gave up and switched to QNX! Fine print: Tesla not included.",
+		"level": 160
+	},
+	{
+		"id": "23173878",
+		"parentId": "23173736",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Now that would indeed be an interesting way of building servers.",
+		"level": 120
+	},
+	{
+		"id": "23173889",
+		"parentId": "23173707",
+		"author": "littlestymaar",
+		"age": "12 hours ago",
+		"text": "For the use-case you describe, your just going to need network access: no file access and no process-forking needed, this is a big surface attack reduction.\n\nMoreover Idk how granular the network permission is, but if its implementation is smart, you could block almost all outbound network access except the ones to your DB and the few API you may need to contact.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173833",
+		"parentId": "23173707",
+		"author": "mrkurt",
+		"age": "12 hours ago",
+		"text": "Sometimes it's ok to think \"this project isn't for me\" and just leave it be. The cynical-security-concern act is boring.",
+		"level": 80
+	},
+	{
+		"id": "23173868",
+		"parentId": "23173833",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Contrary to the impression I seem to have given you, I'm actually super excited about Deno and am planning to write my next MVP app in it.\n\nThat means that I am actually a lot more vested into it, and if I want to put it in production, then I have to be concerned about things like this.\n\nWhen somebody says they think X is broken, and they present a solution Y which they say is better, I am definitely entitled to ask why they think Y is better when I can't see the difference.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174124",
+		"parentId": "23173868",
+		"author": "sirius87",
+		"age": "11 hours ago",
+		"text": "But you don't seem to be genuinely seeking answers, at least not in this thread. Does seem you're already convinced of the projects faults.\n\nYou're entitled to your opinion, of course. I had to read through the docs to understand their module system and intent. And I find it very exciting.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173989",
+		"parentId": "23173833",
+		"author": "eloff",
+		"age": "12 hours ago",
+		"text": "Security is literally the main selling point of this thing. Otherwise just use node.",
+		"level": 120
+	},
+	{
+		"id": "23174823",
+		"parentId": "23173989",
+		"author": "40four",
+		"age": "10 hours ago",
+		"text": "It’s one of the selling points. One of the main points I took away was\n\n” We feel that the landscape of JavaScript and the surrounding software infrastructure has changed enough that it was worthwhile to simplify. We seek a fun and productive scripting environment that can be used for a wide range of tasks.”\n\nSounds intriguing to me. As a fan of starting projects of as simply as possible, I will certainly be tinkering with Deno.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23174668",
+		"parentId": "23173989",
+		"author": "recursive",
+		"age": "10 hours ago",
+		"text": "There are a lot selling points.  To me, the main one is typescript with no build.",
+		"level": 160
+	},
+	{
+		"id": "23175481",
+		"parentId": "23174668",
+		"author": "searchableguy",
+		"age": "8 hours ago",
+		"text": "\n\n  yarn global add ts-node prettier\n  echo 'alias deno=\"ts-node\"' >> ~/.zshrc\n  echo 'alias deno-fmt=\"prettier --write\"' >> ~/.zshrc\n\nDeno provides a standard library, good defaults, top-level async-await, doesn't break browser compatibility, better API to integrate with runtime.\n\nInternals are nicer but that's with anything without ugly legacy.\n\nThey are working to get node_modules work in deno so I am kind of worried that it will be nodev2 all over.\n              ",
+		"level": 200
+	},
+	{
+		"id": "23174868",
+		"parentId": "23174668",
+		"author": "choward",
+		"age": "10 hours ago",
+		"text": "Clearly they have never dealt with JavaScript build tools and npm. A complete nightmare.",
+		"level": 200
+	},
+	{
+		"id": "23175743",
+		"parentId": "23174868",
+		"author": "nickcox",
+		"age": "7 hours ago",
+		"text": "Who hasn't? Isn't this precisely one of the pros of Deno?",
+		"level": 240
+	},
+	{
+		"id": "23176412",
+		"parentId": "23175743",
+		"author": "choward",
+		"age": "6 hours ago",
+		"text": "Yes. That's why I said that.",
+		"level": 280
+	},
+	{
+		"id": "23174860",
+		"parentId": "23173989",
+		"author": "brlewis",
+		"age": "10 hours ago",
+		"text": "Promise-based APIs sold me.",
+		"level": 160
+	},
+	{
+		"id": "23174031",
+		"parentId": "23173989",
+		"author": "mrkurt",
+		"age": "12 hours ago",
+		"text": "Strawman security questions without an understanding of the tool are not very useful.",
+		"level": 160
+	},
+	{
+		"id": "23176562",
+		"parentId": "23173707",
+		"author": "kybernetikos",
+		"age": "5 hours ago",
+		"text": "> For that you'd have to open up network and file access pretty much right off the bat.\n\nI think that overall you're right, but it's worth noting that deno can restrict file system access to specific folders and can restrict read and write separately.  It's plausible to me that you could have a web server that can only access specific folders.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23177671",
+		"parentId": "23173707",
+		"author": "_hl_",
+		"age": "3 hours ago",
+		"text": "I don't think running a public web server application is one of the envisioned use cases here. It looks like a tool for quickly and dirtily getting some job done. But I agree that to get something useful done, you probably need to open up a bunch of permissions, so you're still running arbitrary code on your machine.",
+		"level": 80
+	},
+	{
+		"id": "23175070",
+		"parentId": "23173707",
+		"author": "fao_",
+		"age": "9 hours ago",
+		"text": "> means it's going to be much less secure than the already not-that-secure NPM ecosystem.\n\nI have only the bare minimum of like, experience with nodejs. Would you mind fleshing out why that is so?\n              ",
+		"level": 80
+	},
+	{
+		"id": "23178051",
+		"parentId": "23173707",
+		"author": "amolo",
+		"age": "2 hours ago",
+		"text": "I don't think thats very accurate.\nYou really need to gi watch the first Deno video made by Ryan Dahl at JSConf.",
+		"level": 80
+	},
+	{
+		"id": "23175700",
+		"parentId": "23173707",
+		"author": "nine_k",
+		"age": "7 hours ago",
+		"text": "It's always a good idea to run in a container, which limits the ports you can listen on, directories allowed for writing and reading, and can have its own firewall to limit outgoing connections.\n\nIf you don't need the firewall, you can just run in a chroot under a low-privilege user.\n\nI mean, if you do otherwise, you are not following best practices and the voice of reason.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174319",
+		"parentId": "23173707",
+		"author": "skybrian",
+		"age": "11 hours ago",
+		"text": "The manual looks pretty sketchy, but it seems you can limit file access to certain files or directories and that could be used to just give it access to the database and log files.",
+		"level": 80
+	},
+	{
+		"id": "23175061",
+		"parentId": "23173707",
+		"author": "TACIXAT",
+		"age": "9 hours ago",
+		"text": "If I am building a real world application I'm going to vet the libraries I use.",
+		"level": 80
+	},
+	{
+		"id": "23174076",
+		"parentId": "23173572",
+		"author": "VWWHFSfQ",
+		"age": "11 hours ago",
+		"text": "I guess I'm wondering why Deno is targeting V8 instead of Servo?  Maybe I'm mistaken, but Servo [0] and Stylo [1] are both production-ready browser scripting and styling engines implemented in Rust.\n\n[0] https://servo.org/\n\n[1] https://wiki.mozilla.org/Quantum/Stylo\n              ",
+		"level": 40
+	},
+	{
+		"id": "23174578",
+		"parentId": "23174076",
+		"author": "dralley",
+		"age": "10 hours ago",
+		"text": ">Servo [0] and Stylo [1] are both production-ready browser scripting and styling engines implemented in Rust.\n\nServo is absolutely not production ready. A couple of particular pieces of Servo, such as Stylo and WebRender, can be considered production-ready, but no so much the project as a whole.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174757",
+		"parentId": "23174076",
+		"author": "Gaelan",
+		"age": "10 hours ago",
+		"text": "Servo uses Firefox's SpiderMonkey, which is written in C++, as its JavaScript implementation.",
+		"level": 80
+	},
+	{
+		"id": "23174171",
+		"parentId": "23174076",
+		"author": "Cldfire",
+		"age": "11 hours ago",
+		"text": "Servo is an experimental project designed to build and test components that can be integrated into Firefox. It relies on Gecko for JS.",
+		"level": 80
+	},
+	{
+		"id": "23174339",
+		"parentId": "23174171",
+		"author": "steveklabnik",
+		"age": "11 hours ago",
+		"text": "SpiderMonkey, not Gecko.",
+		"level": 120
+	},
+	{
+		"id": "23178793",
+		"parentId": "23172483",
+		"author": "devit",
+		"age": "32 minutes ago",
+		"text": "What is the reason for making a JavaScript runtime based on browser APIs that cannot also be a browser?\n\nOr in other words, wouldn't it have been easier and better to make an optionally headless version of the Servo browser with additional native APIs and some enhancements like being able to run JavaScript directly in addition to HTML?\n\nThe choice made means that Deno can't be used, at least directly, to make desktop applications, and also doesn't have all the features that browsers have for free, like multiprocess and multiple sandboxes, network traffic inspector, local storage, GPU compute, etc.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23179118",
+		"parentId": "23178793",
+		"author": "timw4mail",
+		"age": "2 minutes ago",
+		"text": "The Javascript engine is a lot smaller code surface area than an entire browser rendering engine.",
+		"level": 40
+	},
+	{
+		"id": "23179019",
+		"parentId": "23178793",
+		"author": "mahmoudimus",
+		"age": "11 minutes ago",
+		"text": "This is a very interesting idea - basically the new JVM is a headless browser. Fascinating to think Of the possibilities.",
+		"level": 40
+	},
+	{
+		"id": "23172988",
+		"parentId": "23172483",
+		"author": "petercooper",
+		"age": "14 hours ago",
+		"text": "If you're getting into Deno and want to keep up with new stuff from the ecosystem on a regular basis, we're now publishing https://denoweekly.com/ .. issue 2 just went out minutes after the 1.0 release. I've been doing JavaScript Weekly for 487 issues now, so this is not a flash in the pan or anything :-D\n\nOf course, Deno has an official Twitter account as well at https://twitter.com/deno_land :-)\n              ",
+		"level": 0
+	},
+	{
+		"id": "23173981",
+		"parentId": "23172988",
+		"author": "ArtWomb",
+		"age": "12 hours ago",
+		"text": "I suppose .land is the new .dev now ;)\n\nAm curious how Parallelism could be handled in the runtime? Besides exposing WebWorkers, would shared memory be a possibility?  V8 looks like its heading toward a portable WebAssembly SIMD accelerator.\n\n>>> Promises all the way down\n\nAsync / await is a great pattern for render loops by resolving to continuous window.requestAnimationFrame calls. Here is a nifty example computing a Buddhabrot and updating new data quite smoothly:\n\nhttp://www.albertlobo.com/fractals/async-await-requestanimat...\n              ",
+		"level": 40
+	},
+	{
+		"id": "23178340",
+		"parentId": "23172988",
+		"author": "lenkite",
+		"age": "1 hour ago",
+		"text": "Root certificate not trusted for https://denoweekly.com/ on both chrome and firefox.",
+		"level": 40
+	},
+	{
+		"id": "23173343",
+		"parentId": "23172988",
+		"author": "notjustanymike",
+		"age": "13 hours ago",
+		"text": "Keep up the good work, JS weekly is a wonderful resource.",
+		"level": 40
+	},
+	{
+		"id": "23174653",
+		"parentId": "23172988",
+		"author": "wintorez",
+		"age": "10 hours ago",
+		"text": "Good to see you here!",
+		"level": 40
+	},
+	{
+		"id": "23176612",
+		"parentId": "23172988",
+		"author": "swyx",
+		"age": "5 hours ago",
+		"text": "right on top of it Peter! nice",
+		"level": 40
+	},
+	{
+		"id": "23176696",
+		"parentId": "23172483",
+		"author": "nojvek",
+		"age": "5 hours ago",
+		"text": "> TSC must be ported to Rust. If you're interested in collaborating on this problem, please get in touch.\n\nThis is a massive undertaking. TSC is a moving target. I occasionally contribute to it. It’s a fairly complex project. Even the checker + binder (which is the core of TS) is pretty complex.\n\nOne idea that comes to mind is to work with Typescript team that they are only using a subset of JS such that tsc can be compiled down web assembly and have llvm spit out a highly optimized binary. This not only benefits demo, but the rest of the internet.\n\nTSC has done some great architectural changes in the past like doing mostly functional code, rather than lots of classes.\n\nThe target we should be aiming for is a powerful typed language like typescript that complies very quickly to webasshmbly that can run in guaranteed sandbox environments.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23176935",
+		"parentId": "23176696",
+		"author": "torb-xyz",
+		"age": "4 hours ago",
+		"text": "There already exists and experimental compiler that takes a subset of TypeScript and compiles it to native[1]. It might be able to target wasm instead of asm.\n\nAlso: If I'm not entirely mistaken Microsoft initially planned to have a TypeScript-specific interpreter in Explorer. This also might indicate that something like that could be possible.\n\n1: https://www.microsoft.com/en-us/research/publication/static-...\n              ",
+		"level": 40
+	},
+	{
+		"id": "23176836",
+		"parentId": "23176696",
+		"author": "Tade0",
+		"age": "5 hours ago",
+		"text": "I wonder how possible it would be to just use this:\n\nhttps://github.com/swc-project/swc\n\nIt's still not feature-complete, but there aren't any alternatives written in Rust that I know of.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23177273",
+		"parentId": "23176836",
+		"author": "a_humean",
+		"age": "4 hours ago",
+		"text": "SWC does not do any typechecking. It is equivalent to babel.",
+		"level": 80
+	},
+	{
+		"id": "23178828",
+		"parentId": "23177273",
+		"author": "Aeolun",
+		"age": "29 minutes ago",
+		"text": "Someone is working on it: https://github.com/swc-project/swc/issues/571",
+		"level": 120
+	},
+	{
+		"id": "23177030",
+		"parentId": "23176696",
+		"author": "baxuz",
+		"age": "4 hours ago",
+		"text": "I see the sass / node-sass fiasco all over again...",
+		"level": 40
+	},
+	{
+		"id": "23178281",
+		"parentId": "23177030",
+		"author": "leetrout",
+		"age": "1 hour ago",
+		"text": "This is referring to lib-sass being in C?",
+		"level": 80
+	},
+	{
+		"id": "23173430",
+		"parentId": "23172483",
+		"author": "bgdam",
+		"age": "13 hours ago",
+		"text": "The dependency management is highly questionable for me. Apart from the security concerns raised by others, I have huge concerns about availability.\n\nIn it's current form, I'd never run Deno on production, because dependencies have to be loaded remotely. I understand they are fetched once and cached, but that will not help me if I'm spinning up additional servers on demand. What if the website of one of the packages I depend on goes down, just as I have a huge spike in traffic?\n\nSay what you want about Node's dependency management, but atleast I'm guaranteed reproducible builds, and the only SPOF is the NPM repositories, which I can easily get around by using one of the proxies.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23176390",
+		"parentId": "23173430",
+		"author": "fsloth",
+		"age": "6 hours ago",
+		"text": "Why can't you download all the packages you use actually with your source code? That's how software has been built for decades...\n\nI'm a desktop developer so I understand I'm the dinosaur in the room but I've never understood why you would not cache all the component packages next to your own source code.\n\nSince this is straighforward to do I presume there is some tradeoff I've not thought about. Is it security? Do you want to get the latest packages automatically? But isn't that a security risk as well, as not all changes are improvements?\n              ",
+		"level": 40
+	},
+	{
+		"id": "23178255",
+		"parentId": "23176390",
+		"author": "Cthulhu_",
+		"age": "1 hour ago",
+		"text": "For Node, the main tradeoff is number and size of files. Usually the distribution of a node module (that which is downloaded into node_modules) contains the source, documentation, distribution, tests, etc. In my current project, it adds up to 500MB already.\n\nThey would do well to have an option to optimize dependencies for vendoring.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23177858",
+		"parentId": "23176390",
+		"author": "emerongi",
+		"age": "2 hours ago",
+		"text": "You can commit your node_modules folder into your repository if you'd like.",
+		"level": 80
+	},
+	{
+		"id": "23176705",
+		"parentId": "23176390",
+		"author": "IshKebab",
+		"age": "5 hours ago",
+		"text": "That is exactly what NPM does.",
+		"level": 80
+	},
+	{
+		"id": "23173462",
+		"parentId": "23173430",
+		"author": "batmansmk",
+		"age": "13 hours ago",
+		"text": "Hi!\nThe response to your fears are in the announcement.\n\"If you want to download dependencies alongside project code instead of using a global cache, use the $DENO_DIR env variable.\"\nThen, it will work like node_modules.",
+		"level": 40
+	},
+	{
+		"id": "23173507",
+		"parentId": "23173462",
+		"author": "bgdam",
+		"age": "13 hours ago",
+		"text": "Ah, in this case, I would then have to commit my dependencies into my VCS to maintain reproducible builds. I'm not sure I like that solution very much either. I've seen node_modules in multiple GBs, and I'm sure Deno's dependency sizes are going to be similar.",
+		"level": 80
+	},
+	{
+		"id": "23173929",
+		"parentId": "23173507",
+		"author": "littlestymaar",
+		"age": "12 hours ago",
+		"text": "True, but that's what people using Go have been doing for years without complaining much, so I guess it works fine for most workload.\n\nAnd before npm fixed things after the left-pad incident, the npm builds where not reproducible either (as demonstrated by the said left-pad incident).\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174817",
+		"parentId": "23173929",
+		"author": "qudat",
+		"age": "10 hours ago",
+		"text": "> True, but that's what people using Go have been doing for years without complaining much, so I guess it works fine for most workload.\n\nI hate to break it to you but dependency management has been a massive issue in golang until the devs formally adopted go mod.\n\nOnly Google seemed okay with checking in their dependencies to version control.  Everyone else was doing crazy hacks like https://labix.org/gopkg.in\n              ",
+		"level": 160
+	},
+	{
+		"id": "23176541",
+		"parentId": "23174817",
+		"author": "littlestymaar",
+		"age": "5 hours ago",
+		"text": "I have only used Go once at work, and I actually dislike most of it (and dependency management was one of the annoying things with Go), nonetheless it is has never been a show stopper and there have been thousands of developers using it when vendoring was the only option.",
+		"level": 200
+	},
+	{
+		"id": "23175185",
+		"parentId": "23174817",
+		"author": "Rapzid",
+		"age": "9 hours ago",
+		"text": "It created a hugely fractured open source ecosystem as well.",
+		"level": 200
+	},
+	{
+		"id": "23176119",
+		"parentId": "23174817",
+		"author": "dgellow",
+		"age": "6 hours ago",
+		"text": "The vendoring has never been the issue though.",
+		"level": 200
+	},
+	{
+		"id": "23178102",
+		"parentId": "23173929",
+		"author": "rplnt",
+		"age": "2 hours ago",
+		"text": "> that's what people using Go have been doing for years without complaining\n\nI haven't seen anyone commit vendor and not complain about it. But now you finally don't have to commit vendor for reproducible builds. All you need is a module proxy. The \"all you need\" is not really meant seriously of course.\n\nAnd I personally prefer to not commit vendor and complain about it.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23177068",
+		"parentId": "23173929",
+		"author": "alienspaces",
+		"age": "4 hours ago",
+		"text": "Go dependency management is quite good now with \"go mod\", plus your dependency tree isn't going to look anything like your typical JavaScript dependencies, otherwise you're doing it wrong..",
+		"level": 160
+	},
+	{
+		"id": "23174165",
+		"parentId": "23173929",
+		"author": "Bahamut",
+		"age": "11 hours ago",
+		"text": "Dependency management is one of the biggest complaints I have seen around Go - I don't think this is accurate.",
+		"level": 160
+	},
+	{
+		"id": "23174211",
+		"parentId": "23174165",
+		"author": "littlestymaar",
+		"age": "11 hours ago",
+		"text": "I don't like it either, but it still works well enough for many people.",
+		"level": 200
+	},
+	{
+		"id": "23176736",
+		"parentId": "23173929",
+		"author": "christophilus",
+		"age": "5 hours ago",
+		"text": "Go compiles to a static binary. It’s not downloading and running source on your production servers. Isn’t that the concern here?",
+		"level": 160
+	},
+	{
+		"id": "23174034",
+		"parentId": "23173929",
+		"author": "thayne",
+		"age": "12 hours ago",
+		"text": "That is one of the things I hate about go. Right up there with lack of generics and boilerplate error handling.",
+		"level": 160
+	},
+	{
+		"id": "23174617",
+		"parentId": "23173929",
+		"author": "pawalt",
+		"age": "10 hours ago",
+		"text": "This hasn't been a thing in Go for a long time. Go dep and now go modules fix this.",
+		"level": 160
+	},
+	{
+		"id": "23174920",
+		"parentId": "23173507",
+		"author": "simonw",
+		"age": "9 hours ago",
+		"text": "You could use a separate git repository for the dependencies. That way you keep your core project repo tight and small and clean, but you still have your dependencies under version control. If that separate repo grows to a few GBs or more it doesn't really hurt anything.",
+		"level": 120
+	},
+	{
+		"id": "23173652",
+		"parentId": "23173507",
+		"author": "batmansmk",
+		"age": "12 hours ago",
+		"text": "To solve your issue, you would do exactly how you do your node deployments: download the deps in a folder in CI, then deploy the whole build.",
+		"level": 120
+	},
+	{
+		"id": "23173720",
+		"parentId": "23173652",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Except that now, the download deps in CI step can fail if one of hundreds of websites for my hundreds of dependencies goes down. If the main NPM repository goes down, I can switch to a mirror and all of my dependencies will be available again.",
+		"level": 160
+	},
+	{
+		"id": "23173861",
+		"parentId": "23173720",
+		"author": "batmansmk",
+		"age": "12 hours ago",
+		"text": "To be the rubber duck, if wiping the cache at each build is a risk to your CI, what could you do to keep your CI up?\n\n1 - not wipe the cache folder at each build? It's easy and secure. Oh and your build will be faster.\n\n2 - use a cached mirror of the deps you use? It's like 10min to put in place and is already used in companies that care about security and availability anyway.\n\n3 - you have https://deno.land/x if you want to put all your eggs in the same npm basket\n              ",
+		"level": 200
+	},
+	{
+		"id": "23174180",
+		"parentId": "23173861",
+		"author": "bgdam",
+		"age": "11 hours ago",
+		"text": "Yes, I think I'd probably settle for solution number 2.\n\nI still don't understand how this is better than NPM, and how Deno solves the horrible dependency management of Node, but maybe if I actually build something with Deno I'll get some answers.\n              ",
+		"level": 240
+	},
+	{
+		"id": "23174950",
+		"parentId": "23174180",
+		"author": "mkolodny",
+		"age": "9 hours ago",
+		"text": "From the post:\n\n> [With NPM] the mechanism for linking to external libraries is fundamentally centralized through the NPM repository, which is not inline with the ideals of the web.\n              ",
+		"level": 280
+	},
+	{
+		"id": "23175221",
+		"parentId": "23174950",
+		"author": "Rapzid",
+		"age": "9 hours ago",
+		"text": "> which is not inline with the ideals of the web\n\nSubjective.\n\n> Centralized currency exchanges and arbitration is not in line with the ideals of the web! - Cryptocurrency\n\nNek minute. Besides, let's get real here; they will just end up centralized on GitHub. How exactly is that situation much different than npm or any other language ecosystems library directory being mirror-able?\n              ",
+		"level": 320
+	},
+	{
+		"id": "23176450",
+		"parentId": "23175221",
+		"author": "afiori",
+		"age": "5 hours ago",
+		"text": "The centralization of git on Github is completely different in nature from the centralization of Node packages on npm.\n\ngit does not require Github to be online to work, nor relies on Github existence for its functionality.\n              ",
+		"level": 360
+	},
+	{
+		"id": "23173948",
+		"parentId": "23173720",
+		"author": "james-mcelwain",
+		"age": "12 hours ago",
+		"text": "I'd highly recommend mirroring packages anyway. Obviously this isn't always necessary for small projects, but if you're building a product, the laws of the universe basically mandate that centralized package management will screw you over, usually at the worst possible time.",
+		"level": 200
+	},
+	{
+		"id": "23173765",
+		"parentId": "23173720",
+		"author": "ricardobeat",
+		"age": "12 hours ago",
+		"text": "You answered your own question. Nothing stops you from using a mirror with deno too.",
+		"level": 200
+	},
+	{
+		"id": "23173829",
+		"parentId": "23173765",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Which again brings me back to something I'm still not understanding - How is Deno's package management better than NPM if it is extremely similar to NPM, but slightly less secure?\n\nI'm only asking because lots of people seem to be loving this new dependency management, so I'm pretty sure I'm missing something here.\n              ",
+		"level": 240
+	},
+	{
+		"id": "23174454",
+		"parentId": "23173829",
+		"author": "kjksf",
+		"age": "11 hours ago",
+		"text": "We need to distinguish between npm, the service (https://www.npmjs.com/) and npm, the tool.\n\nDeno has the functionality of npm, the tool, built-in.\n\nThe difference is that like Go, Deno imports the code directly from the source repository.\n\nIn practice it's going to be github.com (but can be gitlab or any code hosting that you, the author of Deno module, use).\n\nNPM is a un-necessary layer that both Go and Deno has removed.\n\nIt's better because it's simpler for everyone involved.\n\nIn Go, I don't need to \"publish\" my library. People can just import the latest version or, if they want reproducibility, an explicit git revision. Compared to Go, publishing to npm is just unnecessary busy work.\n\nI've seen JavaScript libraries where every other commit is related to publishing a new version to npm, littering the commit history.\n\nIn Go there's no need for package.json, which mostly replicates the information that was lost when publishing to npm (who's the author? what's the license? where's the actual source repository?).\n\nAs to this being insecure: we have over 10 years of experience in Go ecosystem that shows that in practice it works just fine.\n              ",
+		"level": 280
+	},
+	{
+		"id": "23175601",
+		"parentId": "23174454",
+		"author": "gavinray",
+		"age": "8 hours ago",
+		"text": "How do you list the dependency libraries if you don't have a package.json?\n\nDo you manually install a list of libraries provided by the author's readme?\n              ",
+		"level": 320
+	},
+	{
+		"id": "23176473",
+		"parentId": "23175601",
+		"author": "afiori",
+		"age": "5 hours ago",
+		"text": "The simplest approach is to either import anything anywhere, or have a local module that import external dependencies and then have your code import them via that local module.",
+		"level": 360
+	},
+	{
+		"id": "23175863",
+		"parentId": "23175601",
+		"author": "Epskampie",
+		"age": "7 hours ago",
+		"text": "The dependencies are imported in the source code of the package.",
+		"level": 360
+	},
+	{
+		"id": "23173845",
+		"parentId": "23173829",
+		"author": "mrkurt",
+		"age": "12 hours ago",
+		"text": "I like it because it's simpler. I know what happens when I import from a URL. I'd have a hard time whiteboarding exactly what happens when I `npm install`.",
+		"level": 280
+	},
+	{
+		"id": "23174029",
+		"parentId": "23173845",
+		"author": "searchableguy",
+		"age": "12 hours ago",
+		"text": "What happens?",
+		"level": 320
+	},
+	{
+		"id": "23175707",
+		"parentId": "23174029",
+		"author": "sakarisson",
+		"age": "7 hours ago",
+		"text": "My least favorite thing about importing from NPM is that I don't actually know what I'm importing. Sure, there might be a GitHub repository, but code is uploaded to NPM separately, and it is often minified. A malicious library owner could relatively easily inject some code before minifying, while still maintaining a clean-looking repo alongside the package.\n\nImports from URL would allow me to know exactly what I'm getting.\n              ",
+		"level": 360
+	},
+	{
+		"id": "23176219",
+		"parentId": "23175707",
+		"author": "searchableguy",
+		"age": "6 hours ago",
+		"text": "install from the repo then?\n\nYou can install a specific version from git via yarn/npm.\n\nHow do you trust a url more without reading the code?\n\nWhat's going to stop deno ecosystem from putting minified js files on cdns and import them?\n              ",
+		"level": 400
+	},
+	{
+		"id": "23173968",
+		"parentId": "23173829",
+		"author": "keb_",
+		"age": "12 hours ago",
+		"text": "It's decentralized.",
+		"level": 280
+	},
+	{
+		"id": "23173564",
+		"parentId": "23173507",
+		"author": "nitsky",
+		"age": "12 hours ago",
+		"text": "In practice modules will be available from sources that will have similar reliability to npm: github.com, unpkg.com, cdn.pika.dev, jspm.io, etc.",
+		"level": 120
+	},
+	{
+		"id": "23173597",
+		"parentId": "23173564",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Which then raises the question - how is it better than NPM? \nIf there are going to be centralized repositories (like NPM), and if I have to download my dependencies into a $DENO_DIR (like NPM), and if I am then loading these dependencies from local files (like NPM), how is it any different to NPM? Except for being less secure by default?\n\nThis is starting to look like a case of being different just so you can say you're different.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173900",
+		"parentId": "23173597",
+		"author": "austincheney",
+		"age": "12 hours ago",
+		"text": "NPM is a dependency management failure which is why you are ending up with hundreds of dependencies in the first place. It sounds like you want to reproduce that insanity in Deno. Deno is set up in such a way to dissuade you from the stupidity by default but allow it in very few steps if you cannot imagine a world without it.\n\nIn my opinion this is Deno’s biggest selling point.\n              ",
+		"level": 200
+	},
+	{
+		"id": "23174074",
+		"parentId": "23173900",
+		"author": "bgdam",
+		"age": "11 hours ago",
+		"text": "> Deno is set up in such a way to dissuade you from the stupidity by default but allow it in very few steps if you cannot imagine a world without it.\n\nCould you elaborate on this? Is it that Deno is against the whole 'small packages that do one thing well' principle and instead in favor of complete libaries? How exactly would it dissuade me from installing hundreds of dependencies?\n              ",
+		"level": 240
+	},
+	{
+		"id": "23174126",
+		"parentId": "23174074",
+		"author": "austincheney",
+		"age": "11 hours ago",
+		"text": "The default design style for a Deno application is that the application becomes a single file. Just like packages coming off Steam. This requires that dependencies are packaged into the application before it is distributed to others. The idea there is to include only what you need deliberately and it manage it as a remotely written extension of your application.",
+		"level": 280
+	},
+	{
+		"id": "23174247",
+		"parentId": "23174126",
+		"author": "bgdam",
+		"age": "11 hours ago",
+		"text": "Having a single executable file, makes distribution easier, but while I'm developing the app, I'll still have to manage all of it's dependencies right? How does Deno aid during development?\n\n> The idea there is to include only what you need deliberately and it manage it as a remotely written extension of your application.\n\nI have a node app, in which I deliberately only included the dependencies I need. The package.json lists exactly 8 dependencies. However, the node_modules folder already has 97 dependencies installed into it. The reason of course is that these are dependencies of dependencies of dependencies of dependencies.\n\nWouldn't Deno have this same issue? Are the dependencies also distributed in compiled form as a single file akin to windows DLLs?\n              ",
+		"level": 320
+	},
+	{
+		"id": "23173634",
+		"parentId": "23173564",
+		"author": "nitsky",
+		"age": "12 hours ago",
+		"text": "it's better because there will be more choice.",
+		"level": 160
+	},
+	{
+		"id": "23174044",
+		"parentId": "23173634",
+		"author": "searchableguy",
+		"age": "12 hours ago",
+		"text": "I am always confused by deno folks. You can install from a git repository using yarn/npm.\n\nHow is that not \"decentralisation\"\n\nAnd if you are importing single files from a remote url, I would question your sanity.\n              ",
+		"level": 200
+	},
+	{
+		"id": "23174191",
+		"parentId": "23174044",
+		"author": "nitsky",
+		"age": "11 hours ago",
+		"text": "> install from a git repository using yarn/npm\n\nyep, that's basically the same. deno has the benefit of using the es module system like it is implemented in browsers.\n              ",
+		"level": 240
+	},
+	{
+		"id": "23174018",
+		"parentId": "23173634",
+		"author": "pknopf",
+		"age": "12 hours ago",
+		"text": "Node supports node_modules, not npm. Anything can build the node_modules.",
+		"level": 200
+	},
+	{
+		"id": "23173742",
+		"parentId": "23173634",
+		"author": "riyakhanna1983",
+		"age": "12 hours ago",
+		"text": "Doesn't this mean more opportunities to inject malicious code?",
+		"level": 200
+	},
+	{
+		"id": "23173910",
+		"parentId": "23173742",
+		"author": "austincheney",
+		"age": "12 hours ago",
+		"text": "Only if you tell your application to retrieve from untrusted locations.",
+		"level": 240
+	},
+	{
+		"id": "23177048",
+		"parentId": "23173507",
+		"author": "drbw",
+		"age": "4 hours ago",
+		"text": "Or use something like Nexus or Artifactory to host a private copy of dependencies.",
+		"level": 120
+	},
+	{
+		"id": "23173500",
+		"parentId": "23173462",
+		"author": "fermienrico",
+		"age": "13 hours ago",
+		"text": "I think the primary way to manage dependencies should be in a local DIR and optionally, a URL can be specified.\n\nThe default in Deno is questionable choice. Just don't fuck with what works. Default should be safest followed by developers optionally enabling less safe behaviors.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173752",
+		"parentId": "23173500",
+		"author": "fiddlerwoaroof",
+		"age": "12 hours ago",
+		"text": "Using a universally unique identifier like a URL is a good idea: this way, https://foo.com/foo and https://bar.com/foo are distinct and anyone who can register their own name gets a namespace, without relying on yet another centralized map of names->resources.\n\nAfter all, the whole point of a URL is that it unambiguously  identifies resources in a system-independent way.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23178825",
+		"parentId": "23173752",
+		"author": "ric2b",
+		"age": "29 minutes ago",
+		"text": "It could be a good idea if they were immutable, like IPFS links.",
+		"level": 160
+	},
+	{
+		"id": "23173954",
+		"parentId": "23173752",
+		"author": "littlestymaar",
+		"age": "12 hours ago",
+		"text": "Good luck finding which of foo.com/foo or bar.com/foo is the foo module you want though…",
+		"level": 160
+	},
+	{
+		"id": "23175974",
+		"parentId": "23173954",
+		"author": "janpot",
+		"age": "7 hours ago",
+		"text": "Good luck finding which of google.com/search or bing.com/search is the search engine you want though",
+		"level": 200
+	},
+	{
+		"id": "23176468",
+		"parentId": "23175974",
+		"author": "littlestymaar",
+		"age": "5 hours ago",
+		"text": "This is true actually, and that's why being the default search engine is so important Google pays billions each year for that.",
+		"level": 240
+	},
+	{
+		"id": "23174413",
+		"parentId": "23173752",
+		"author": "fermienrico",
+		"age": "11 hours ago",
+		"text": "No one is questioning the utility of URLs. Using URLs to specify dependencies right in the import statement is a horrible idea.",
+		"level": 160
+	},
+	{
+		"id": "23174933",
+		"parentId": "23174413",
+		"author": "fiddlerwoaroof",
+		"age": "9 hours ago",
+		"text": "How is it any worse than using names from a namespace controlled by “npmjs.com”: if you’re concerned about build stability, you should be caching your deps on your build servers anyways.",
+		"level": 200
+	},
+	{
+		"id": "23175181",
+		"parentId": "23174933",
+		"author": "fermienrico",
+		"age": "9 hours ago",
+		"text": "I've never used npm or developed any javascript before but it sounds equally horrible.\n\nNot decoupling the source of the package (i.e., the location of the repository whether it is on remote or local) and its usage in the language is a terrible idea.\n\n  from foo import bar\n  # foo should not be a URL. It should just be an identifier.\n  # The location of the library should not be mangled up in the code base.\n\n\nAre we gonna search replace URL strings in the entire codebase because the source changed? Can someone tell me what is the upside of this approach because I cannot see a single one but many downsides.",
+		"level": 240
+	},
+	{
+		"id": "23175493",
+		"parentId": "23175181",
+		"author": "fiddlerwoaroof",
+		"age": "8 hours ago",
+		"text": "The whole idea of a URL is that it’s a standardized way of identifying resources in a universally unique fashion: if I call my utility library “utils”, I’m vulnerable to name collisions when my code is run in a context that puts someone else’s “utils” module ahead of mine on the search path. If my utility module is https://fwoar.co/utils then, as long as I control that domain, the import is unambiguous (especially if it includes a version or similar.).\n\nThe issue you bring up can be solved in several ways: for example, xml solves it by allowing you to define local aliases for a namespace in the document that’s being processed. Npm already sort of uses the package.json for this purpose: the main difference is that npmjs.com hosts a centralized registry of module names, rather than embedding the mapping of local aliases->url in the package.json\n              ",
+		"level": 280
+	},
+	{
+		"id": "23175625",
+		"parentId": "23175493",
+		"author": "fermienrico",
+		"age": "7 hours ago",
+		"text": "Allow me to provide an extremely relevant example (medium sized code base).\n\nAbout 100 python files, each one approximately 500-1000 lines long.\n\nImagine in each one of these files, there are 10 unique imports. If they are URLs (with version encoded in the URL):\n\n- How are you going to pin the dependencies?\n- How do you know 100 files are using the same exact version of the library?\n- How are you going to refactor dependency resolution or upgrades, maintenance, deprecation?\n\nHow will these problems be solved? Yes, I understand the benefits of the URL - its a unique identifier. You need an intermediate \"look up\" table to decouple the source from the codebase. That's usually requirements.txt, poetry.lock, pipenv.lock, etc.\n              ",
+		"level": 320
+	},
+	{
+		"id": "23177746",
+		"parentId": "23175625",
+		"author": "lewisl9029",
+		"age": "2 hours ago",
+		"text": "I believe the long term solution to the issues you raised is import maps: https://github.com/WICG/import-maps\n\nIt's an upcoming feature on the browser standards track gaining a lot of traction (deno already supports it), and offers users a standardized way to maintain the decoupling that you mentioned, and allows users to refer to dependencies in the familiar bare identifier style that they're used to from node (i.e. `import * as _ from 'lodash'` instead of `import * as _ from 'https://www.npmjs.com/package/lodash'`).\n\nI imagine tooling will emerge to help users manage & generate the import map for a project and install dependencies locally similar to how npm & yarn help users manage package-lock.json/yarn.lock and node_modules.\n              ",
+		"level": 360
+	},
+	{
+		"id": "23177602",
+		"parentId": "23175625",
+		"author": "veidr",
+		"age": "3 hours ago",
+		"text": "The Deno docs recommend creating a deps.ts file for your project (and it could be shared among multiple projects), which exports all your dependencies. Then in your application code, instead of importing from the long and unwieldy external URL, import everything from deps.ts, e.g.:\n\n    // deps.ts\n    export {\n      assert,\n      assertEquals,\n      assertStrContains,\n    } from \"https://deno.land/std/testing/asserts.ts\";\n\n\nAnd then, in your application code:\n\n    import { assertEquals, runTests, test } from \"./deps.ts\";\n\nhttps://deno.land/manual/linking_to_external_code#it-seems-u...",
+		"level": 360
+	},
+	{
+		"id": "23175769",
+		"parentId": "23175625",
+		"author": "fiddlerwoaroof",
+		"age": "7 hours ago",
+		"text": "Yeah, I agree, but that intermediate lookup table (a) can be in code and (b) can involve mapping local package names to url package names.\n\nOne off scripts would do `from https://example.com/package import bar` and bigger projects could define a translation table (e.g. in __init__.py or similar) that defines the translation table for the project.\n\nEmbedding this sort of metadata in the runtime environment has a lot of advantages too: it’s a lot easier to write scripts that query and report on the metadata if you can just say something like `import deps; print( deps.getversions(‘https://example.com/foo’)`\n\nOne of the best parts about web development is that, for quick POC-type code, I can include a script tag that points at unpkg.com or similar and just start using any arbitrary library.\n              ",
+		"level": 360
+	},
+	{
+		"id": "23174114",
+		"parentId": "23173462",
+		"author": "thayne",
+		"age": "11 hours ago",
+		"text": "That might work for some projects, but can quickly blow up the size of the repo.\n\nI don't think it it is an unsolvable problem. For example, other solutions could be using a mirror proxy to get packages, instead of directly from the source, or pre-populating the deno dir from an artifact store. It would be nice to have documentation on how to do those though.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174224",
+		"parentId": "23174114",
+		"author": "s17n",
+		"age": "11 hours ago",
+		"text": "A better solution is something like https://vfsforgit.org/",
+		"level": 120
+	},
+	{
+		"id": "23175196",
+		"parentId": "23174224",
+		"author": "thayne",
+		"age": "9 hours ago",
+		"text": "That's not necessarily better. For one thing, it doesn't support Linux yet. For another, afaik, Azure DevOps is the only git hosting service that supports it.\n\nEven if it was better supported, I wouldn't want to start using it just so I can include all my dependencies in git. Of course if you are using something like vfs for git anyway, then increasing the repo size is less of an issue. It still feels wrong to me though.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23174956",
+		"parentId": "23173430",
+		"author": "CGamesPlay",
+		"age": "9 hours ago",
+		"text": "Several responses to your concern but all of them seem to say \"you can cache dependencies\". How does Deno find dependencies ahead of runtime? Does Deno not offer dynamic imports at all?\n\nIf I have an application that uses, say, moment.js and want to import a specific locale, typically this is done using a dynamic import.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23173454",
+		"parentId": "23173430",
+		"author": "ryanseys",
+		"age": "13 hours ago",
+		"text": "It's just a URL right? So could you not mirror the packages to your own server if you're so concerned, or better yet import from a local file? Nothing here seems to suggest that packages must be loaded from an external URL.",
+		"level": 40
+	},
+	{
+		"id": "23173466",
+		"parentId": "23173454",
+		"author": "bgdam",
+		"age": "13 hours ago",
+		"text": "> or better yet import from a local file\n\nAnd this is different from NPM how? Except that I've now lost all the tooling around NPM/Yarn.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173614",
+		"parentId": "23173466",
+		"author": "ryanseys",
+		"age": "12 hours ago",
+		"text": "It's different because it doesn't rely on require() which is non-standard JavaScript.",
+		"level": 120
+	},
+	{
+		"id": "23173626",
+		"parentId": "23173614",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Node v14 supports ESM modules and the import syntax, which is standard Javascript.",
+		"level": 160
+	},
+	{
+		"id": "23175714",
+		"parentId": "23173614",
+		"author": "akamaozu",
+		"age": "7 hours ago",
+		"text": "setTimeout is non-standard JavaScript too but I bet your code base has multiple instances of its usage.",
+		"level": 160
+	},
+	{
+		"id": "23178869",
+		"parentId": "23175714",
+		"author": "ric2b",
+		"age": "25 minutes ago",
+		"text": "Is it? It's on every browser I know.",
+		"level": 200
+	},
+	{
+		"id": "23174342",
+		"parentId": "23173430",
+		"author": "PudgePacket",
+		"age": "11 hours ago",
+		"text": "Then you either vendor as others have said, or use the built in bundle tool to produce a single js file of all your code including dependencies.\n\nhttps://deno.land/manual/tools/bundler\n              ",
+		"level": 40
+	},
+	{
+		"id": "23173492",
+		"parentId": "23173430",
+		"author": "merpnderp",
+		"age": "13 hours ago",
+		"text": "You’d deploy builds that include all the dependencies. This isn’t Node where you have to download all deps on your production server, they are built into your deployed files.",
+		"level": 40
+	},
+	{
+		"id": "23173529",
+		"parentId": "23173430",
+		"author": "bananabreakfast",
+		"age": "13 hours ago",
+		"text": "Ever used Go? Not that different.",
+		"level": 40
+	},
+	{
+		"id": "23173716",
+		"parentId": "23173529",
+		"author": "stryan",
+		"age": "12 hours ago",
+		"text": "Go supports \"vendor\" folders for storing dependencies locally after initial download. That combined with Go Modules means you can handle everything locally and (I believe) reproducible.",
+		"level": 80
+	},
+	{
+		"id": "23174208",
+		"parentId": "23173716",
+		"author": "nitsky",
+		"age": "11 hours ago",
+		"text": "deno has the same support with $DENO_DIR and a lockfile.",
+		"level": 120
+	},
+	{
+		"id": "23175428",
+		"parentId": "23173430",
+		"author": "Aeolun",
+		"age": "8 hours ago",
+		"text": "How is this different from requiring npm to be up to install packages?",
+		"level": 40
+	},
+	{
+		"id": "23175482",
+		"parentId": "23173430",
+		"author": "29athrowaway",
+		"age": "8 hours ago",
+		"text": "Reproducible builds, sure. Security? that's a different story.\n\nhttps://github.com/ChALkeR/notes/blob/master/Gathering-weak-...\n\n- node ships with npm\n\n- npm has a high number of dependencies\n\n- npm does not implement good practices around authentication.\n\nCan someone compromise npm itself? probably, according to that article.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23178116",
+		"parentId": "23172483",
+		"author": "genezeta",
+		"age": "2 hours ago",
+		"text": "One question.\n\n> The browser provides APIs for accessing cameras and microphones, but users must first give permission. Deno provides analogous behaviour in the terminal.\n\nI read this and I started looking around for the camera API or maybe for the Audio API. And the thing is that I can't seem to find anything about it. I can't see anything about it in \"The Manual\" or in the API reference.\n\nThen I thought that there may not be documentation because it just mimics the browser's API. Ok, but... there must be some command-line flag to give permission to it, right? Can't find it either. Maybe \"it was just an example; there's no media API just yet\"?\n\nBut then I set out to find available command-line flags in general. And I can't find those either. There's this [0] but is that all? There's just --allow-net, --allow-read and --allow-write? Or is there some other place where the available permission flags are listed?\n\n[0] https://deno.land/manual/getting_started/permissions\n              ",
+		"level": 0
+	},
+	{
+		"id": "23178185",
+		"parentId": "23178116",
+		"author": "DougBTX",
+		"age": "1 hour ago",
+		"text": "I don't see it listed in the docs, but try running `deno run -h` to see the command line help. It should produce output like:\n\n    -A, --allow-all                    Allow all permissions\n        --allow-env                    Allow environment access\n        --allow-hrtime                 Allow high resolution time measurement\n        --allow-net=<allow-net>        Allow network access\n        --allow-plugin                 Allow loading plugins\n        --allow-read=<allow-read>      Allow file system read access\n        --allow-run                    Allow running subprocesses\n        --allow-write=<allow-write>    Allow file system write access\n\netc",
+		"level": 40
+	},
+	{
+		"id": "23178496",
+		"parentId": "23178185",
+		"author": "genezeta",
+		"age": "1 hour ago",
+		"text": "Thanks.",
+		"level": 80
+	},
+	{
+		"id": "23178192",
+		"parentId": "23178116",
+		"author": "iillexial",
+		"age": "1 hour ago",
+		"text": "Deno does not provide API to Video & Audio. It was just an analogy.",
+		"level": 40
+	},
+	{
+		"id": "23178238",
+		"parentId": "23178192",
+		"author": "Cthulhu_",
+		"age": "1 hour ago",
+		"text": "I think they could've used an analogy using a feature they do actually support, then.",
+		"level": 80
+	},
+	{
+		"id": "23179121",
+		"parentId": "23178238",
+		"author": "tleb_",
+		"age": "1 minute ago",
+		"text": "Would it still be an analogy though?",
+		"level": 120
+	},
+	{
+		"id": "23178183",
+		"parentId": "23178116",
+		"author": "inglor",
+		"age": "1 hour ago",
+		"text": "Confirming that there is no media API in Deno.",
+		"level": 40
+	},
+	{
+		"id": "23178505",
+		"parentId": "23178183",
+		"author": "genezeta",
+		"age": "1 hour ago",
+		"text": "Thanks.",
+		"level": 80
+	},
+	{
+		"id": "23175320",
+		"parentId": "23172483",
+		"author": "didip",
+		"age": "8 hours ago",
+		"text": "I like what Deno is selling. URL like import path is great, I don't know why people are dismissing it. It is easy to get up-and-running quickly.\n\nLooks like my personal law/rule is in effect again: The harsher HN critics are, the more successful the product will be. I have no doubt Deno will be successful.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23178155",
+		"parentId": "23175320",
+		"author": "gintery",
+		"age": "1 hour ago",
+		"text": "Your law is hilarious. I tend to check the comments before reading a post: if they say the idea is terrible, I know I should read it.",
+		"level": 40
+	},
+	{
+		"id": "23177934",
+		"parentId": "23175320",
+		"author": "sradman",
+		"age": "2 hours ago",
+		"text": "The GoLang-like URL import and dependency management are indeed an innovation in simplicity while simultaneously offering better compatibility with browser JavaScript.\n\nPerhaps the HN-hate is not about simplified greenfield tech as much as it is about breaking established brownfield processes and modules.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23176433",
+		"parentId": "23175320",
+		"author": "kreetx",
+		"age": "6 hours ago",
+		"text": "This seems to be the case, yes. It's like the critics unconsciously know it's better, and that is where their energy comes from.",
+		"level": 40
+	},
+	{
+		"id": "23176857",
+		"parentId": "23175320",
+		"author": "oblio",
+		"age": "5 hours ago",
+		"text": "> It is easy to get up-and-running quickly.\n\nAlmost all successful, mainstream, techs are like that. From a purely technical perspective, they are awful (or where awful at launch), they were just adopted because they were easy to use. When I say awful, I mean for professional use in high impact environments: financial, healthcare, automotive, etc.\n\nExamples: VB/VBA, Javascript, PHP, MySQL, Mongo, Docker, Node.\n\nFew people would argue that except for ease of use and ubiquity, any of these techs were superior to their competitors at launch or even a few years after.\n\nAfter a while what happens is that these techs become entrenched and more serious devs have to dig in and they generally make these techs bearable. See Javascript before V8 and after, as an example.\n\nA big chunk of the HN crowd is high powered professional developers, people working for FAANGs and startups with interesting domains. It's only normal they criticize what they consider half-baked tech.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23177656",
+		"parentId": "23172483",
+		"author": "HeavyStorm",
+		"age": "3 hours ago",
+		"text": "Number of things come to mind:\n\n- How do you update dependencies? They are urls spread along many files which can be everywhere... Do I have to find and replace every import statement?\n\n- In some enterprise environments, we use mirroring of package distributors (Nexus, jfrog etc.). This give us the ability to audit what packages are being imported, create a cache of packages so that a single delete or unpublish (like good old leftpad) won't break all applications, etc. Since package locations are hard-coded in the package files, it becomes challenging to do this.\n\nThe argument that deno is mimicking a browser is thin. Browsers are client side, they don't access databases or lives inside your firewall. Server applications are much more sensitive to security issues than browsers.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23177995",
+		"parentId": "23177656",
+		"author": "dwb",
+		"age": "2 hours ago",
+		"text": "A lot of comments here can be answered by reading the documentation.\n\nhttps://deno.land/manual/linking_to_external_code#faq\n              ",
+		"level": 40
+	},
+	{
+		"id": "23174030",
+		"parentId": "23172483",
+		"author": "tolmasky",
+		"age": "12 hours ago",
+		"text": "Forget the (reasonable) security and reliability concerns people have already brought up with regard to importing bare URLs. How about just the basic features of dealing with other people's code: how am I supposed to update packages? Do we write some separate tool (but not a package management tool!) that parses out import URLs, increments the semver, and... cURLs to see if a new version exists? Like if I am currently importing \"https://whatever.com/blah@1.0.1\", do I just poll to see if \"1.0.2\" exists? Maybe check for \"2.0.0\" too just in case? Is the expectation that I should be checking the blogs of all these packages myself for minor updates? Then, if you get past that, you have a huge N-line change where N is every file that references that package, and thus inlines the versioning information, instead of a simple and readable one-line diff that shows \"- blah: 1.0.1, + blah: 1.0.2\".",
+		"level": 0
+	},
+	{
+		"id": "23178242",
+		"parentId": "23174030",
+		"author": "emerongi",
+		"age": "1 hour ago",
+		"text": "Another thing is that with package.json every dependency can say which versions of its dependencies it works with. This lets you update a dependency that is used by other dependencies and only have a single version (most up to date) of it. Some package managers also let you completely override a version that one of your dependencies uses, allowing you to force the use of a newer version.\n\nWith Deno, both of these use cases seem way harder to satisfy. None of your dependencies can say \"hey, I work with versions 1.1 to 1.3 of this dependency\", instead they link to a hardcoded URL. The best chance of overriding or updating anything is if Deno supports a way to shim dependencies, but even then you might need to manually analyze your dependency tree and shim a whole bunch of URLs of the same library. On top of that, as soon as you update anything, your shims might be out of date and you need to go through the whole process again. To make the whole process easier, Deno could compare checksums of the dependencies it downloads and through that it could show you a list of URLs that all return the same library, but this would be like the reverse of package.json: instead of centrally managing your dependencies, you look at your dependencies after they have been imported and then try to make sense of it.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23174083",
+		"parentId": "23174030",
+		"author": "mrkurt",
+		"age": "11 hours ago",
+		"text": "The Deno solution is either:\n\n* A deps.ts that handles all external dependencies and re-exports them\n\n* Import maps\n\nNeither of these really give you a way to do the equivalent of \"npm update\". But I almost never want to update all my packages at once.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23174094",
+		"parentId": "23174083",
+		"author": "tolmasky",
+		"age": "11 hours ago",
+		"text": "You don’t like checking for security updates?",
+		"level": 80
+	},
+	{
+		"id": "23174122",
+		"parentId": "23174094",
+		"author": "mrkurt",
+		"age": "11 hours ago",
+		"text": "Lately I just merge GitHub's pull requests for that. ;)\n\nI don't like running \"npm update\" to try and get security updates, though. npm packages aren't very rigorous about PATCH level changes.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174093",
+		"parentId": "23174030",
+		"author": "c-cube",
+		"age": "11 hours ago",
+		"text": "Maybe a convention will arise, that you do all the imports in one file (basically like a `package.json` file) and import that from the rest of your code? It seems hackish to me but could work.",
+		"level": 40
+	},
+	{
+		"id": "23174997",
+		"parentId": "23174093",
+		"author": "CGamesPlay",
+		"age": "9 hours ago",
+		"text": "This is explicitly listed as best practice by Deno [1], but it doesn't handle the updating problem at all.\n\n[1] https://deno.land/manual/linking_to_external_code#it-seems-u...\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174072",
+		"parentId": "23174030",
+		"author": "austincheney",
+		"age": "11 hours ago",
+		"text": "You have to stop thinking in terms of NPM where it takes 1000000000 packages to do anything. A Deno application is designed to be distributed as a single file. You can override the default behavior to have NPM like stupidity, but if that is really your goal why bother moving to Deno in the first place?",
+		"level": 40
+	},
+	{
+		"id": "23174133",
+		"parentId": "23174072",
+		"author": "tolmasky",
+		"age": "11 hours ago",
+		"text": "Forget 10000000 packages. Many languages often make use of 10s of packages. If I have several projects, each with around 10 packages, and no automated way to just check if all my projects’ respective dependencies have security updates that could be applied, it seems to go against the stated security goal.\n\nSeparately I’m not sure what is enforcing this “small dependency graph” aside from making it hard to import things I guess. I wouldn’t be surprised if you end up with the normal behavior of people coming up with cool things and other people importing them.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174463",
+		"parentId": "23174133",
+		"author": "austincheney",
+		"age": "11 hours ago",
+		"text": "> and no automated way to just check if all my projects’ respective dependencies have security updates\n\nDependency management is a major cornerstone of any infosec program. There is more to that than just auto-installing a new dependency version.\n\n> I’m not sure what is enforcing this “small dependency graph”\n\nBecause a large dependency graph is slow, insecure, and fragile.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23174590",
+		"parentId": "23174463",
+		"author": "tolmasky",
+		"age": "10 hours ago",
+		"text": "> Dependency management is a major cornerstone of any infosec program. There is more to that than just auto-installing a new dependency version.\n\nWe seem to agree? I said check. It’s very useful to have something tell you what’s out of date and what the updates are.\n\n> Because a large dependency graph is slow, insecure, and fragile.\n\nI asked “what”, not “why”. What is enforcing this idea you have of how Deno will be used? I feel like you want it to not be used with lots of dependencies, thus aren’t accounting for how to handle them. However, just because that’s the desired way to use it doesn’t mean it will be used that way. Lots of dependencies may end up still becoming the norm, at which point you’ll wish you would have more clearly defined how it should be done instead of letting the first third party solution win (as ended up happening with npm).\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173048",
+		"parentId": "23172483",
+		"author": "pedalpete",
+		"age": "13 hours ago",
+		"text": "Does anyone else see the import directly from URL as a larger security/reliability issue than the currently imperfect modules?\n\nI'm sure I'm missing something obvious in that example, but that capability terrifies me.\n              ",
+		"level": 0
+	},
+	{
+		"id": "23173631",
+		"parentId": "23173048",
+		"author": "batmansmk",
+		"age": "12 hours ago",
+		"text": "I thought a lot about it, and it seems as secure as node_modules, because anybody can publish to npm anyway. You can even depend to your non-npm repo (github, urls...) from a npm-based package.\n\nIf you want to \"feel\" as safe, you have import maps in deno, which works like package.json.\n\nOverall, I think Deno is more secure because it cuts the man in the middle (npm) and you can make a npm mirror with low effort, a simple fork will do. Which means you can not only precisely pin which code you want, but also make sure nobody knows you use those packages either.\n\nTake it with an open mind, a new \"JSX\" or async programming moment. People will hate it, then will start to see the value of this design down the road.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23176359",
+		"parentId": "23173631",
+		"author": "pimterry",
+		"age": "6 hours ago",
+		"text": "> I thought a lot about it, and it seems as secure as node_modules, because anybody can publish to npm anyway\n\nnpm installs aren't the same as installing from a random URL, because:\n\n* NPM (the org) guarantees that published versions of packages are immutable, and will never change in future. This is definitely not true for a random URL.\n\n* NPM (the tool) stores a hash of the package in your package-lock.json, and installing via `npm ci` (which enforces the lockfile and never updates it in any case) guarantees that the package you get matches that hash.\n\nDownloading from a random URL can return anything, at the whims of the owner, or anybody else who can successfully mitm your traffic. Installing a package via npm is the same only the very first time you ever install it. Once you've done that, and you're happy that the version you're using is safe, you have clear guarantees on future behaviour.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23177405",
+		"parentId": "23176359",
+		"author": "reaktivo",
+		"age": "3 hours ago",
+		"text": "This is why I think a content addressable store like IPFS would shine working with Deno",
+		"level": 120
+	},
+	{
+		"id": "23177756",
+		"parentId": "23177405",
+		"author": "pimterry",
+		"age": "2 hours ago",
+		"text": "That solves this specific problem nicely, although AFAIK IPFS doesn't guarantee long-term availability of any content, right? If you depend on a package version that's not sufficiently popular, it could disappear, and then you're in major trouble.\n\nIt'd be interesting to look at ways to mitigate that by requiring anybody using a package version to rehost it for others (since they have a copy locally anyway, by definition). But then you're talking about some kind of IPFS server built into your package manager, which now needs to be always running, and this starts to get seriously complicated & practically challenging...\n              ",
+		"level": 160
+	},
+	{
+		"id": "23176524",
+		"parentId": "23176359",
+		"author": "Vinnl",
+		"age": "5 hours ago",
+		"text": "My assumption would be that new men in the middle will arise, but this time, you can pick which one to use.",
+		"level": 120
+	},
+	{
+		"id": "23176804",
+		"parentId": "23176524",
+		"author": "ecares",
+		"age": "5 hours ago",
+		"text": "btw: https://github.com/denoland/deno/issues/1063\n\nthey know there is a bad mitm vector and won't fix it\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173994",
+		"parentId": "23173631",
+		"author": "ryanbrunner",
+		"age": "12 hours ago",
+		"text": "One advantage of having a centralized repository is that the maintainers of that repository have the ability to remove genuinely malicious changes (even if it's at the expense of breaking builds). Eliminating the middle man isn't always a great thing when one of the people on the end is acting maliciously.",
+		"level": 80
+	},
+	{
+		"id": "23174287",
+		"parentId": "23173994",
+		"author": "mhink",
+		"age": "11 hours ago",
+		"text": "I'm just thinking out loud here, but it seems to me that you could just make sure you're importing all your dependencies from trusted package repos, right? And since the URL for a package is right there in the `import` statement, it seems like it'd be pretty easy to lint for untrusted imports.\n\nI don't detest NPM in the way that some people do, but I have always worried about the implications of the fact that nearly the entire community relies on their registry. If they ever fell over completely, they would have hamstrung a huge amount of the JS community.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173114",
+		"parentId": "23173048",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "It's basically the same \"exposure\" as importing a random npm, but it has the benefit if being explicit when you do it.\n\nIt's also exactly what the websites you visit do. ;)\n              ",
+		"level": 40
+	},
+	{
+		"id": "23173338",
+		"parentId": "23173114",
+		"author": "eyelidlessness",
+		"age": "13 hours ago",
+		"text": "> It's basically the same \"exposure\" as importing a random npm, but it has the benefit if being explicit when you do it.\n\nThis is definitely false. For all the problems with the NPM registry and the Node dependency situation, an NPM package at a specific version is not just at the whims of whatever happens to be at the other end of a URL at any given moment it's requested. This is a huge vulnerability that the Node/NPM world does not currently have.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173397",
+		"parentId": "23173338",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "That is a fair point. I don't think most people who use npms really pay much attention, though, and you're still just an npm update away from getting something unexpected (because really, who puts explicit versions in package.json?).\n\nDeno does have lockfiles: https://deno.land/manual/linking_to_external_code/integrity_...\n\nI prefer imports from URLs. And I loathe npm. I get why people would disagree though.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173405",
+		"parentId": "23173338",
+		"author": "megavolcano",
+		"age": "13 hours ago",
+		"text": "Deno has lock files and caches files locally on first import.",
+		"level": 120
+	},
+	{
+		"id": "23173931",
+		"parentId": "23173405",
+		"author": "pedalpete",
+		"age": "12 hours ago",
+		"text": "yeah, but we regularly clear out our cache and lock files, so this doesn't really solve the issue, unless you're commiting all of your packages",
+		"level": 160
+	},
+	{
+		"id": "23174213",
+		"parentId": "23173931",
+		"author": "megavolcano",
+		"age": "11 hours ago",
+		"text": "Why are you _regularly_ clearing lock files?  If you're bypassing lock files you're going to have the exact same issue with npm or yarn or any other package manager that downloads from the internet.",
+		"level": 200
+	},
+	{
+		"id": "23175603",
+		"parentId": "23174213",
+		"author": "chrischen",
+		"age": "8 hours ago",
+		"text": "Dunno about OP but I pin versions in package.json because it allows me to control the versions and upgrade major versions only when explicit and necessary, and rely only on the lock file to keep it the same between commit time and the production build.",
+		"level": 240
+	},
+	{
+		"id": "23176850",
+		"parentId": "23175603",
+		"author": "K0nserv",
+		"age": "5 hours ago",
+		"text": "That doesn’t actually work and gives you a false sense of reproducibility and stability. Sure your top level dependencies might not change without explicit changes to package.json but every time you run npm install without a lock file all transitive dependencies are re-resolved and can change.\n\nAlways commit your lock files people\n              ",
+		"level": 280
+	},
+	{
+		"id": "23176459",
+		"parentId": "23175603",
+		"author": "choward",
+		"age": "5 hours ago",
+		"text": "That's fine for one developer pushing to production from their own machine. But I've you have aCI server and you're working with other people you're going to want to know that everyone is working with the same modules.",
+		"level": 280
+	},
+	{
+		"id": "23173965",
+		"parentId": "23173931",
+		"author": "mrkurt",
+		"age": "12 hours ago",
+		"text": "What! Clearing lock files seems wild. How do you know you're getting the right code when you install dependencies?",
+		"level": 200
+	},
+	{
+		"id": "23173409",
+		"parentId": "23173338",
+		"author": "0xCMP",
+		"age": "13 hours ago",
+		"text": "For Deno the only issue is the first time when you do not have it cached. Deno compiles in all dependencies when building so the only point of failure is the machine you’re building on.\n\nI don’t know the state of the art anymore, but I’m sure they have ways to make it easy to vendor deps in the repo.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173281",
+		"parentId": "23173114",
+		"author": "xg15",
+		"age": "13 hours ago",
+		"text": "> It's basically the same \"exposure\" as importing a random npm, but it has the benefit if being explicit when you do it.\n\nI'm not sure how this works in detail here, but at least in NPM you got a chance to download packages, inspect them and fix the versions if so desired. Importantly, this gave you control over your transitive dependencies as well.\n\nThis seems more like the curl | bash school of package management.\n\nEdit: This is explained in more detail at https://deno.land/manual/linking_to_external_code and indeed seems a lot more sane.\n\n> It's also exactly what the websites you visit do. ;)\n\nWell yes, and it causes huge problems there already - see the whole mess we have with trackers and page bloat.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174955",
+		"parentId": "23173281",
+		"author": "greggman3",
+		"age": "9 hours ago",
+		"text": "AFAIK there is no option to allow a website to read and write random files anywhere to my hard drive period. At most a website can ask the user select a file or offer one for downloading. In the future maybe it can be given a domain specific folder.\n\nThat's not true here. If I'm running a web server I'm going to need to give the app permission to read the files being served and access to the database. That something that never happens in the browser.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173955",
+		"parentId": "23173281",
+		"author": "pedalpete",
+		"age": "12 hours ago",
+		"text": "Thanks for sharing that link. Seems much more sane, but not without issues. I'm sure this will continue to be iterated upon.\n\nEven with all NPMs flaws, I do feel this is a bit of throwing the baby out with the bath water. Time will tell.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173431",
+		"parentId": "23173281",
+		"author": "thysultan",
+		"age": "13 hours ago",
+		"text": "The good thing about this is you can effectively build a register service that serves the same level of trust that npm provides, because at the end of the day that is the only deferential in this scenario as npm can just as well return malicious code.",
+		"level": 120
+	},
+	{
+		"id": "23173418",
+		"parentId": "23173281",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "The tldr is Deno also gives you a chance to download + inspect packages, and then lock dependencies. The mechanism for import is different, but the tooling is good.",
+		"level": 120
+	},
+	{
+		"id": "23173460",
+		"parentId": "23173048",
+		"author": "Roboprog",
+		"age": "13 hours ago",
+		"text": "Sure do.  I wonder if they have a checksum mechanism like browsers do?\n\nYou can add an “integrity” attribute to script tags in the browser.\n\nhttps://developer.mozilla.org/en-US/docs/Web/Security/Subres...\n              ",
+		"level": 40
+	},
+	{
+		"id": "23173975",
+		"parentId": "23173460",
+		"author": "james-mcelwain",
+		"age": "12 hours ago",
+		"text": "One advantage of urls is that you can link to a specific git sha, tag, or branch for a dependency, e.g. on github.",
+		"level": 80
+	},
+	{
+		"id": "23175308",
+		"parentId": "23173975",
+		"author": "filleduchaos",
+		"age": "8 hours ago",
+		"text": "So exactly like existing tooling can already do, then?",
+		"level": 120
+	},
+	{
+		"id": "23175451",
+		"parentId": "23175308",
+		"author": "james-mcelwain",
+		"age": "8 hours ago",
+		"text": "Sure, I probably phrased that poorly -- it's not a unique advantage, but benefit of having URLs be the only way to link to dependencies versus a centralized, dominant package manager.",
+		"level": 160
+	},
+	{
+		"id": "23173544",
+		"parentId": "23173460",
+		"author": "bgdam",
+		"age": "13 hours ago",
+		"text": "It's not just about the integrity. The url may very well provide what they claim to provide, so checksums would match, but it's the direct downloading and running of remote code that is terrifying.\n\nThis is pretty much like all the bash one-liners piping and executing a curl/wget download. I understand there are sandbox restrictions, but are the restrictions on a per dependency level, or on a program level?\n\nIf they are on a program level, they are essentially useless, since the first thing I'm going to do is break out of the sandbox to let my program do whatever it needs to do (read fs/network etc.).  If it is on a per dependency level,  then am I really expected to manage sandbox permissions for all of my projects dependencies?\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173745",
+		"parentId": "23173544",
+		"author": "batmansmk",
+		"age": "12 hours ago",
+		"text": "If you afraid of \"direct\" downloading and executing some of that code, then what do you think happen when you npm install/pip install a package?\nI'm very interested if you can expose a new attack vector that didn't exist with the previous solutions.",
+		"level": 120
+	},
+	{
+		"id": "23175056",
+		"parentId": "23173745",
+		"author": "mirekrusin",
+		"age": "9 hours ago",
+		"text": "You can generate modules on the fly on the server, that require next generated module recursively blowing up your disk space. If deno stores those files uncompressed, you can generate module full of comments/zeros so it compresses very well for attacker and eats a lot of space on consumer side.",
+		"level": 160
+	},
+	{
+		"id": "23173144",
+		"parentId": "23173048",
+		"author": "Saaster",
+		"age": "13 hours ago",
+		"text": "Does Deno have some built in way to vendor / download the imports pre-execution? I don't want my production service to fail to launch because some random repo is offline.",
+		"level": 40
+	},
+	{
+		"id": "23173250",
+		"parentId": "23173144",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "Yes, lock files: https://deno.land/manual/linking_to_external_code/integrity_...",
+		"level": 80
+	},
+	{
+		"id": "23173253",
+		"parentId": "23173144",
+		"author": "PinkMilkshake",
+		"age": "13 hours ago",
+		"text": "Yup! Deno caches remote imports.\n\nhttps://deno.land/manual/linking_to_external_code\n              ",
+		"level": 80
+	},
+	{
+		"id": "23174346",
+		"parentId": "23173144",
+		"author": "PudgePacket",
+		"age": "11 hours ago",
+		"text": "You can also use the built in bundle command to bundle all of your dependencies and your code into a single, easily deployable file. https://deno.land/manual/tools/bundler.",
+		"level": 80
+	},
+	{
+		"id": "23173247",
+		"parentId": "23173144",
+		"author": "afiori",
+		"age": "13 hours ago",
+		"text": "Deno caches local copies and offer control on when to reload them. in term of vendoring you can simply download everything yourself and use local paths for imports.",
+		"level": 80
+	},
+	{
+		"id": "23173307",
+		"parentId": "23173247",
+		"author": "xg15",
+		"age": "13 hours ago",
+		"text": "How would this work with transitive dependencies? Sure I can control which parts I import myself, but how do I keep a vendored file from pulling in another URL a level deeper?",
+		"level": 120
+	},
+	{
+		"id": "23173345",
+		"parentId": "23173307",
+		"author": "thebradbain",
+		"age": "13 hours ago",
+		"text": "Unlike node, recommended deno practice is to check-in your dependencies to the VCS.\n\n> Production software should always bundle its dependencies. In Deno this is done by checking the $DENO_DIR into your source control system, and specifying that path as the $DENO_DIR environmental variable at runtime.\n\nhttps://deno.land/manual/linking_to_external_code\n              ",
+		"level": 160
+	},
+	{
+		"id": "23177630",
+		"parentId": "23173345",
+		"author": "Rotareti",
+		"age": "3 hours ago",
+		"text": "\n\n    du -hs node_modules\n    \n    1.7G node_modules",
+		"level": 200
+	},
+	{
+		"id": "23179029",
+		"parentId": "23177630",
+		"author": "40four",
+		"age": "10 minutes ago",
+		"text": "Yeah, that's what Deno is trying to get away from. We're starting from scratch here, so lets go down that road again.",
+		"level": 240
+	},
+	{
+		"id": "23173391",
+		"parentId": "23173247",
+		"author": "bgdam",
+		"age": "13 hours ago",
+		"text": "> in term of vendoring you can simply download everything yourself and use local paths for imports.\n\nSo I basically have to do manually, what NPM/yarn do for me already?\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173599",
+		"parentId": "23173391",
+		"author": "afiori",
+		"age": "12 hours ago",
+		"text": "I do not speak for the project, but based on my understanding part of the point was to avoid the magic of npm.\n\nYou can use lock-files, bundles, and many other features that  makes dependencies management easier.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173759",
+		"parentId": "23173599",
+		"author": "bgdam",
+		"age": "12 hours ago",
+		"text": "Ah from that perspective I can see how this might appear to be better. Personally, I like the 'magic' of NPM (which to be honest I don't really think is all that magical, it's quite transparent what's happening behind the scenes). This 'magic' means I no longer have to write 200 line makefiles, so it definitely makes my life easier.",
+		"level": 200
+	},
+	{
+		"id": "23174131",
+		"parentId": "23173759",
+		"author": "afiori",
+		"age": "11 hours ago",
+		"text": "Some of that convenience will still be included, a couple of things that deno will do differently from node will be that there is no standard index.* file to load and import path include the extension.",
+		"level": 240
+	},
+	{
+		"id": "23173224",
+		"parentId": "23173144",
+		"author": "doctoboggan",
+		"age": "13 hours ago",
+		"text": "I assume you would just download the packages and serve them yourself.",
+		"level": 80
+	},
+	{
+		"id": "23176724",
+		"parentId": "23173048",
+		"author": "ecares",
+		"age": "5 hours ago",
+		"text": "espacially since https is not enforced! https://github.com/denoland/deno/issues/1063",
+		"level": 40
+	},
+	{
+		"id": "23173443",
+		"parentId": "23173048",
+		"author": "dceddia",
+		"age": "13 hours ago",
+		"text": "I'm wondering about the practicality of importing from URLs. I didn't see it addressed, but an import like this will be awfully hard to remember.\n\n    import { serve } from \"https://deno.land/std@0.50.0/http/server.ts\";\n\nAnyone know if there are alternatives or a plan for this aside from \"use an IDE to remember it for you\"?",
+		"level": 40
+	},
+	{
+		"id": "23173489",
+		"parentId": "23173443",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "The convention is to make a `deps.ts` and re-export what you need. Like this: https://deno.land/x/collections/deps.ts\n\nI don't find versioned URLs much more difficult to work with than package@<version> though.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23173678",
+		"parentId": "23173489",
+		"author": "uryga",
+		"age": "12 hours ago",
+		"text": "i'm wondering if they'll end up adding a 'dependencies.json' to eliminate the boilerplate from 'deps.ts' and to simplify tooling. that'd be revolutionary! ;)\n\njokes aside, i wonder how import-via-url will impact tooling. having to parse arbitrary JS (or even run it, for dynamic imports?) seems like it'd make writing a \"list all dependencies\" tool much harder than a \"dumb\" JSON/TOML/whatever file would. though i guess Go does a similar thing, and afaik they're fine\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173700",
+		"parentId": "23173678",
+		"author": "mrkurt",
+		"age": "12 hours ago",
+		"text": "Well they do have import maps! I think everyone likes shorthand package names.",
+		"level": 160
+	},
+	{
+		"id": "23177439",
+		"parentId": "23173048",
+		"author": "speedgoose",
+		"age": "3 hours ago",
+		"text": "You are not alone, this is very unsafe in my humble opinion.",
+		"level": 40
+	},
+	{
+		"id": "23174844",
+		"parentId": "23173048",
+		"author": "jppope",
+		"age": "10 hours ago",
+		"text": "More than likely programming as a whole will get better because of this...\n\nDo you trust this thing? Better off developing it yourself, or working with something you trust then.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23173945",
+		"parentId": "23173048",
+		"author": "austincheney",
+		"age": "12 hours ago",
+		"text": "How is it any different than how it works in the browser?",
+		"level": 40
+	},
+	{
+		"id": "23173426",
+		"parentId": "23173048",
+		"author": "tvbusy",
+		"age": "13 hours ago",
+		"text": "deno requires that you give the process explicitly which permissions it has. I think it's much better than praying that a package has not gone rough like with node. If you don't trust the remote script, run it without any permission and capture the output. Using multiple process with explicit permissions are much safer.",
+		"level": 40
+	},
+	{
+		"id": "23173123",
+		"parentId": "23173048",
+		"author": "frank2",
+		"age": "13 hours ago",
+		"text": "Does it also terrify you when code running in a browser does it?",
+		"level": 40
+	},
+	{
+		"id": "23173168",
+		"parentId": "23173123",
+		"author": "Saaster",
+		"age": "13 hours ago",
+		"text": "The code running in my browser isn't a multi-tenant production server, with access to the filesystem and DBs.",
+		"level": 80
+	},
+	{
+		"id": "23173385",
+		"parentId": "23173168",
+		"author": "0beah",
+		"age": "13 hours ago",
+		"text": "Except that with Deno, everything IO related is turned off by default and has to be granted access before it becomes a process. It's the first bullet point on the landing page.\n\nHere is the page with more detail.\nhttps://deno.land/manual/getting_started/permissions\n\nIt can even restrict access down to a specific directory or host. This is cool.\n\nWhereas any NPM module can map your subnet, lift your .ssh directory, and yoink environment variables, wily-nily.\n\nIt's happened before.\n              ",
+		"level": 120
+	},
+	{
+		"id": "23173483",
+		"parentId": "23173385",
+		"author": "sterlind",
+		"age": "13 hours ago",
+		"text": "That still doesn't prevent imported modules from yoinking anything you did grant access to, though. For instance, if my service connects to a DB then `uuid` can slurp the contents.\n\nIt'd be nice to have some capability model where modules can only access things through handles passed to them, but probably infeasible for a project like this.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173514",
+		"parentId": "23173483",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "You can actually run things as Workers in Deno and get some sandboxing abilities: https://github.com/denoland/deno/blob/master/docs/runtime/wo...",
+		"level": 200
+	},
+	{
+		"id": "23173245",
+		"parentId": "23173168",
+		"author": "yawn",
+		"age": "13 hours ago",
+		"text": "From the article:  \"Also like browsers, code is executed in a secure sandbox by default. Scripts cannot access the hard drive, open network connections, or make any other potentially malicious actions without permission.\"",
+		"level": 120
+	},
+	{
+		"id": "23173271",
+		"parentId": "23173245",
+		"author": "hombre_fatal",
+		"age": "13 hours ago",
+		"text": "That just means you have to run with the -http -fs, etc. flags. But you are using those when writing any nontrivial Deno app like a webserver anyways.\n\n\"web browsers already do this ;)\" isn't a good comparison.\n              ",
+		"level": 160
+	},
+	{
+		"id": "23173428",
+		"parentId": "23173271",
+		"author": "mrkurt",
+		"age": "13 hours ago",
+		"text": "\"But I have to turn all that stuff on\" is also not a good comparison.\n\nActually, no Deno webserver I've written gets fs access. Some only get --allow-net.\n              ",
+		"level": 200
+	},
+	{
+		"id": "23173285",
+		"parentId": "23173168",
+		"author": "XCSme",
+		"age": "13 hours ago",
+		"text": "I think that's the main selling point of deno, sandboxing.",
+		"level": 120
+	},
+	{
+		"id": "23172698",
+		"parentId": "23172483",
+		"author": "seleniumBubbles",
+		"age": "14 hours ago",
+		"text": "Congratulations on the 1.0 release! I've been using Deno as my primary \"hacking\" runtime for several months now, I appreciate how quickly I can throw together a simple script and get something working. (It's even easier than ts-node, which I primarily used previously.)\n\nI would love to see more focus in the future on the REPL in Deno. I still find myself trying things in the Node.js REPL for the autocomplete support. I'm excited to see how Deno can take advantage of native TypeScript support to make a REPL more productive: subtle type hinting, integrated tsdocs, and type-aware autocomplete (especially for a future pipeline operator).\n              ",
+		"level": 0
+	},
+	{
+		"id": "23178159",
+		"parentId": "23172698",
+		"author": "Pyrodogg",
+		"age": "1 hour ago",
+		"text": "Repl.it recently announced a Deno REPL https://repl.it/languages/deno",
+		"level": 40
+	},
+	{
+		"id": "23172722",
+		"parentId": "23172698",
+		"author": "indemnity",
+		"age": "14 hours ago",
+		"text": "Seconded, a Deno TS REPL would be amazing, but they probably have a few bigger fish to fry yet :)",
+		"level": 40
+	},
+	{
+		"id": "23173081",
+		"parentId": "23172722",
+		"author": "IggleSniggle",
+		"age": "13 hours ago",
+		"text": "> bigger fish to fry\n\n> fish\n\nI see what you did there, and I approve.\n              ",
+		"level": 80
+	},
+	{
+		"id": "23176003",
+		"parentId": "23172698",
+		"author": "damagednoob",
+		"age": "7 hours ago",
+		"text": "I evaluated replacing ts-node with deno but if I use -T and install ts-node globally that seems equivalent to deno to me.\n\nI think stepping outside the npm ecosystem is going to be a bigger issue then people think.\n              ",
+		"level": 40
+	},
+	{
+		"id": "23176005",
+		"parentId": "23172698",
+		"author": "feihcsim",
+		"age": "7 hours ago",
+		"text": "i wonder if it's conceivable to ever write typescript in a REPL",
+		"level": 40
+	},
+	{
+		"id": "23176877",
+		"parentId": "23176005",
+		"author": "regularfry",
+		"age": "5 hours ago",
+		"text": "There are both ocaml and haskell repls, so it can be done with  languages whose type systems are the focus.  Not sure if there's anything specific about typescript that would make it hard, though.",
+		"level": 80
+	},
+	{
+		"id": "23172743",
+		"parentId": "23172483",
+		"author": "firloop",
+		"age": "14 hours ago",
+		"text": "For the uninitiated, worth noting that one of the names on this post, Ryan Dahl, was the original node.js developer.",
+		"level": 0
+	},
+	{
+		"id": "23173330",
+		"parentId": "23172743",
+		"author": "ignoramous",
+		"age": "13 hours ago",
+		"text": "Also for the uninitiated, fly.io is migrating to deno for their Serverless functions: https://news.ycombinator.com/item?id=22621926",
+		"level": 40
+	},
+	{
+		"id": "23179112",
+		"parentId": "23173330",
+		"author": "mahmoudimus",
+		"age": "2 minutes ago",
+		"text": "Precisely the use case that Deno should be used for. Serverless functions are a great use case for Deno right now.",
+		"level": 80
+	},
+	{
+		"id": "23172837",
+		"parentId": "23172743",
+		"author": "networkimprov",
+		"age": "14 hours ago",
+		"text": null,
+		"level": 40
+	},
+	{
+		"id": "23172895",
+		"parentId": "23172837",
+		"author": "javajosh",
+		"age": "14 hours ago",
+		"text": "\"Automatic asynchronicity[sic]\"?! Node and all async io is cooperative multi-tasking, the opposite of automatic. The node event loop is a thin wrapper around the epoll() system-call (or one of its equivalents), and leaves the details of multi-tasking to the app developer. It's no wonder you weren't able to scale under node if you thought something was happening automatically for you!",
+		"level": 80
+	},
+	{
+		"id": "23173074",
+		"parentId": "23172895",
+		"author": "rubber_duck",
+		"age": "13 hours ago",
+		"text": "Maybe he meant forced async as DOM/node blocking APIs are async/callback based since it's the only multitasking model available (or it was before workers)",
+		"level": 120
+	},
+	{
+		"id": "23172910",
+		"parentId": "23172837",
+		"author": "root_axis",
+		"age": "14 hours ago",
+		"text": "Why do you say this?",
+		"level": 80
+	}
+]
