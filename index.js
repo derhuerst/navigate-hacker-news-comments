@@ -77,6 +77,10 @@ const _parent = (indents, indent, id) => {
 	}
 }
 
+const findCommentElement = (document, id) => {
+	return document.getElementById(id) || null
+}
+
 const findComments = function* (document, start = null) {
 	const rootId = document.querySelector('tr.athing[id]').getAttribute('id')
 	let indents = [
@@ -136,6 +140,7 @@ const findChildren = function* (document, commentEl) {
 // todo
 
 module.exports = {
+	findCommentElement,
 	findComments,
 	findSiblings,
 	findChildren,
